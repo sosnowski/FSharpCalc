@@ -1,4 +1,6 @@
-﻿module RPN
+﻿namespace Calc
+
+module RPN =
     open FParsec
 
     type OPERATORS =
@@ -19,7 +21,7 @@
         ]
     let pNumber = pfloat |>> RPNNumber
 
-    let calculateRPN str = 
+    let calculateRPN (str:string):float = 
         let applyOperator op stack =
             let operator = match op with
                 | OPERATORS.ADD -> (+)
@@ -45,5 +47,4 @@
                         | Success(res, _, position) ->
                             stack |> handleNewInput res |> nextInput (str.[int(position.Index)..])
         
-        nextInput str []
-        //nextInput str 0 (String.length str) numbersStack
+        (nextInput str []).[0]
