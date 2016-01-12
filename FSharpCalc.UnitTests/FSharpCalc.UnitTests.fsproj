@@ -61,6 +61,7 @@
     <None Include="App.config" />
     <Compile Include="RPNTests.fs" />
     <Content Include="packages.config" />
+    <Compile Include="ParserTests.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

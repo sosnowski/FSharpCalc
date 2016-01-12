@@ -1,12 +1,13 @@
-﻿// Learn more about F# at http://fsharp.org
-// See the 'F# Tutorial' project for more help.
-open Calc
+﻿open Calc
 
 [<EntryPoint>]
 let main argv = 
     printfn "%A" argv
 
-    printfn "D: %A" (RPN.calculateRPN "2 7 + 3 / 14 3 - 4 * + 2 /")
+    let input = "(5 + (1 + 2)) * 4 - 3";
+
+    printfn "Input: %s" input
+    printfn "Result: %A" (RPN.calculateRPN (Parser.parseInfixNotation "(5 + (1 + 2)) * 4 - 3"))
 
     System.Console.ReadKey() |> ignore
     0 // return an integer exit code

@@ -1,50 +1,32 @@
 ﻿namespace Calc
 
 module RPN =
-    open FParsec
+    open Parser
 
-    type OPERATORS =
-        | ADD
-        | SUBSTRACT
-        | MULTIPLY
-        | DIVIDE
-    type RPNValue =
-        | RPNNumber of float
-        | RPNOperator of OPERATORS
+    let OPERATORS = [
+        (OPERATOR_TYPES.ADD, (+));
+        (OPERATOR_TYPES.DIVIDE, (/));
+        (OPERATOR_TYPES.MULTIPLY, (*));
+        (OPERATOR_TYPES.SUBSTRACT, (-))] |> Map.ofList
 
-    let pOperator = 
-        choice [
-            stringReturn "+" (RPNOperator OPERATORS.ADD);
-            stringReturn "-" (RPNOperator OPERATORS.SUBSTRACT);
-            stringReturn "*" (RPNOperator OPERATORS.MULTIPLY);
-            stringReturn "/" (RPNOperator OPERATORS.DIVIDE)
-        ]
-    let pNumber = pfloat |>> RPNNumber
 
-    let calculateRPN (str:string):float = 
-        let applyOperator op stack =
-            let operator = match op with
-                | OPERATORS.ADD -> (+)
-                | OPERATORS.SUBSTRACT -> (-)
-                | OPERATORS.MULTIPLY -> (*)
-                | OPERATORS.DIVIDE -> (/)
-            
+    let calculateRPN (rpnInput) =
+        let resStack: float list = []
+
+        let handleOperator stack opType =
             match stack with
-                | first::second::tail -> (operator second first) :: tail
-                | [_] | [] -> failwith "Not enough arguments for operator!"
+                | num1::num2::tail -> (OPERATORS.[opType] num2 num1)::tail
+                | [_] | [] -> failwith "Not enought operator arguments!"
 
-        let handleNewInput input stack =
-            match input with
-                | RPNNumber num -> num :: stack
-                | RPNOperator op -> stack |> applyOperator op
+        let rec nextToken rpnInput resStack =
+            match rpnInput with
+                | head::tail -> 
+                    match head with
+                        | RPNNumber num -> nextToken tail (num::resStack)
+                        | RPNOperator (opPriority, opType) -> nextToken tail (handleOperator resStack opType)
+                        | _ -> failwith "Invalid input token"
+                            
+                | [] -> (rpnInput, resStack)
         
-        let rec nextInput str (stack: float list) =
-            match String.length str with
-                | 0 -> stack
-                | _ ->
-                    match (run (spaces >>. (pNumber <|> pOperator)) str) with
-                        | Failure(str, err, _) -> failwith (sprintf "PARSER ERROR: %s" str)
-                        | Success(res, _, position) ->
-                            stack |> handleNewInput res |> nextInput (str.[int(position.Index)..])
-        
-        (nextInput str []).[0]
+        match (nextToken rpnInput resStack) with
+            | (input, output) -> output.[0]

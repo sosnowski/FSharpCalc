@@ -62,6 +62,7 @@
     </None>
     <Content Include="packages.config" />
     <Compile Include="JSON.fs" />
+    <Compile Include="Parser.fs" />
     <Compile Include="RPN.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
