@@ -2,12 +2,10 @@
 
 [<EntryPoint>]
 let main argv = 
-    printfn "%A" argv
-
-    let input = "(5 + (1 + 2)) * 4 - 3";
+    let input = argv.[0]
 
     printfn "Input: %s" input
-    printfn "Result: %A" (RPN.calculateRPN (Parser.parseInfixNotation "(5 + (1 + 2)) * 4 - 3"))
+    printfn "Result: %A" (RPN.calculateRPN (Parser.parseInfixNotation input))
 
     System.Console.ReadKey() |> ignore
     0 // return an integer exit code
